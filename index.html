@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herbie's Command Center — Ideas · Progress · Network</title>
+    <style>
+        /* === COMMAND CENTER — BLACK + ORANGE (RTS-inspired) === */
+        :root {
+            --bg: #0a0a0a;
+            --bg-elev: #141414;
+            --bg-elev-2: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.16);
+            --orange: #ff7a1a;
+            --orange-hot: #ff8c33;
+            --orange-dim: rgba(255, 122, 26, 0.18);
+            --orange-glow: rgba(255, 122, 26, 0.4);
+            --text: #ffffff;
+            --text-dim: #a0a0a0;
+            --text-faint: #6b6b6b;
+            --green: #51cf66;
+            --yellow: #ffd43b;
+            --blue: #74c0fc;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background:
+                radial-gradient(ellipse at top, rgba(255, 122, 26, 0.06) 0%, transparent 50%),
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px) 0 0 / 48px 48px,
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px) 0 0 / 48px 48px,
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* === HEADER === */
+        header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
+        .logo-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--orange), var(--orange-hot));
+            font-size: 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 0 1px var(--border-strong), 0 0 24px rgba(255, 122, 26, 0.35);
+        }
+        header h1 { font-size: 2.6em; margin-bottom: 12px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+        header p { font-size: 1.05em; color: var(--text-dim); margin-bottom: 6px; }
+        .tagline { font-size: 0.85em; color: var(--text-faint); font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; }
+        .date-line { font-size: 0.85em; color: var(--text-faint); margin-top: 12px; }
+
+        /* === QUOTE / NARRATIVE HIGHLIGHT === */
+        .narrative-highlight {
+            background: linear-gradient(135deg, var(--bg-elev) 0%, var(--bg-elev-2) 100%);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--orange);
+            border-radius: 12px; padding: 28px; margin-bottom: 40px;
+            text-align: center;
+        }
+        .quote-mark {
+            font-family: Georgia, serif;
+            color: var(--orange);
+            font-size: 3em;
+            line-height: 0;
+            display: block;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        .quote-text {
+            font-size: 1.4em;
+            line-height: 1.5;
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .quote-author {
+            font-size: 0.9em;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        /* === SECTIONS === */
+        .section { margin-bottom: 50px; }
+        .section-header {
+            font-size: 1.5em; font-weight: 700; color: var(--text);
+            margin-bottom: 24px; padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            letter-spacing: -0.01em; position: relative;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .section-header::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 60px; height: 2px;
+            background: var(--orange);
+        }
+        .section-icon { font-size: 1.2em; }
+
+        /* === GRID === */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 20px; }
+
+        /* === CARDS === */
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .card.highlight {
+            border-left: 3px solid var(--orange);
+        }
+        .card h3 {
+            font-size: 1.15em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+        }
+        .card-desc {
+            font-size: 0.9em;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .card-meta {
+            font-size: 0.8em;
+            color: var(--text-faint);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* === BADGES === */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-hot {
+            background: var(--orange-dim);
+            color: var(--orange);
+            border: 1px solid rgba(255, 122, 26, 0.3);
+        }
+        .badge-explore {
+            background: rgba(255, 212, 59, 0.12);
+            color: var(--yellow);
+            border: 1px solid rgba(255, 212, 59, 0.25);
+        }
+        .badge-wait {
+            background: rgba(116, 192, 252, 0.12);
+            color: var(--blue);
+            border: 1px solid rgba(116, 192, 252, 0.25);
+        }
+        .badge-done {
+            background: rgba(81, 207, 102, 0.12);
+            color: var(--green);
+            border: 1px solid rgba(81, 207, 102, 0.25);
+        }
+
+        /* === LIST STYLE === */
+        .item-list {
+            list-style: none;
+        }
+        .item-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .item-list li:last-child {
+            border-bottom: none;
+        }
+        .item-list .item-name {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95em;
+        }
+        .item-list .item-desc {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        /* === PROGRESS === */
+        .progress-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .progress-item:last-child { border-bottom: none; }
+        .progress-name {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        .progress-name strong { color: var(--text); font-weight: 600; }
+        .progress-name span { color: var(--text-faint); font-size: 0.85em; }
+        .progress-bar {
+            background: rgba(255,255,255,0.05);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--orange), var(--orange-hot));
+            box-shadow: 0 0 12px rgba(255, 122, 26, 0.4);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .progress-fill.done {
+            background: linear-gradient(90deg, var(--green), #40c057);
+            box-shadow: 0 0 12px rgba(81, 207, 102, 0.3);
+        }
+
+        /* === FOCUS ITEMS === */
+        .focus-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .focus-item:last-child { border-bottom: none; }
+        .focus-item .focus-icon {
+            font-size: 1.2em;
+            flex-shrink: 0;
+            width: 30px;
+            text-align: center;
+        }
+        .focus-item .focus-content {
+            flex: 1;
+        }
+        .focus-item .focus-content strong {
+            color: var(--text);
+            display: block;
+            font-size: 0.95em;
+            margin-bottom: 3px;
+        }
+        .focus-item .focus-content span {
+            color: var(--text-dim);
+            font-size: 0.82em;
+            line-height: 1.5;
+        }
+
+        /* === REMINDERS === */
+        .reminder {
+            padding: 16px;
+            background: rgba(255, 122, 26, 0.05);
+            border-left: 2px solid var(--orange);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 12px;
+            font-size: 0.92em;
+            line-height: 1.6;
+            color: var(--text-dim);
+        }
+        .reminder:last-child { margin-bottom: 0; }
+        .reminder strong { color: var(--text); }
+
+        /* === STATUS DOT === */
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-active {
+            background: var(--green);
+            box-shadow: 0 0 8px rgba(81, 207, 102, 0.6);
+        }
+        .status-building {
+            background: var(--yellow);
+            box-shadow: 0 0 8px rgba(255, 212, 59, 0.5);
+        }
+        .status-planned {
+            background: var(--blue);
+        }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 40px 20px 20px;
+            color: var(--text-faint);
+            font-size: 0.85em;
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2em; }
+            .quote-text { font-size: 1.1em; }
+            .grid, .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-badge">🦊</div>
+            <h1>Herbie's Command Center</h1>
+            <p>Ideas · Progress · Network · Momentum</p>
+            <div class="tagline">You have unfair advantages. Use them.</div>
+            <div class="date-line" id="date-line"></div>
+        </header>
+
+        <!-- Daily quote -->
+        <div class="narrative-highlight">
+            <span class="quote-mark">"</span>
+            <div class="quote-text" id="quote-text">Loading quote...</div>
+            <div class="quote-author" id="quote-author">—</div>
+        </div>
+
+        <!-- Ideas -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">💡</span>
+                Ideas in Motion
+            </div>
+            <div class="grid">
+                <div class="card highlight">
+                    <h3>
+                        <span class="status-dot status-active"></span>
+                        RTS Platform
+                    </h3>
+                    <div class="card-desc">
+                        Guest research + scoring + outreach drafts for podcasts. Built with Ben's Road to Success as proof of concept.
+                    </div>
+                    <div class="card-meta">
+                        <span class="badge badge-hot">Active</span>
+                        <span>Cron: Sun 6am UK</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="status-dot status-building"></span>
+                        AI Rota Builder
+                    </h3>
+                    <div class="card-desc">
+                        Hospitality staff scheduling AI. Fair, optimised rotas that consider availability, pay rates, budgets, busy periods.
+                    </div>
+                    <div class="card-meta">
+                        <span class="badge badge-explore">Explore</span>
+                        <span>James @ Masons feedback</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="status-dot status-planned"></span>
+                        Golf Companion App
+                    </h3>
+                    <div class="card-desc">
+                        Marketplace to find people to play golf with. With Gabriel as co-founder.
+                    </div>
+                    <div class="card-meta">
+                        <span class="badge badge-explore">With Gabriel</span>
+                        <span>Waiting on commitment</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="status-dot status-planned"></span>
+                        Podcast Growth Service
+                    </h3>
+                    <div class="card-desc">
+                        End-to-end podcast automation for Tweak Marketing clients. Built on RTS platform tools.
+                    </div>
+                    <div class="card-meta">
+                        <span class="badge badge-wait">Phase 2</span>
+                        <span>After RTS proves out</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">📈</span>
+                This Week's Progress
+            </div>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>🔧 RTS Platform Builds</h3>
+                    <div class="progress-item">
+                        <div class="progress-name">
+                            <strong>Contact finder pipeline</strong>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill done" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-name">
+                            <strong>Email draft generator</strong>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill done" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-name">
+                            <strong>CandidateCard redesign</strong>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill done" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-name">
+                            <strong>Cron first fire (waiting)</strong>
+                            <span>40%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-name">
+                            <strong>Ben's contact method</strong>
+                            <span>0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 5%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🎯 Today's Focus</h3>
+                    <div class="focus-item">
+                        <div class="focus-icon">🍺</div>
+                        <div class="focus-content">
+                            <strong>James @ The Masons Arms</strong>
+                            <span>Get his rota builder input. Ask which app they use, what's broken, would they switch tools.</span>
+                        </div>
+                    </div>
+                    <div class="focus-item">
+                        <div class="focus-icon">📞</div>
+                        <div class="focus-content">
+                            <strong>Message Paul</strong>
+                            <span>He's back in the UK. Check if he's free today.</span>
+                        </div>
+                    </div>
+                    <div class="focus-item">
+                        <div class="focus-icon">🔍</div>
+                        <div class="focus-content">
+                            <strong>Ben's contact method</strong>
+                            <span>How does he actually find guest emails? Ask this week.</span>
+                        </div>
+                    </div>
+                    <div class="focus-item">
+                        <div class="focus-icon">💭</div>
+                        <div class="focus-content">
+                            <strong>Gabriel check-in</strong>
+                            <span>Golf app — is he a real co-founder or just an idea partner?</span>
+                        </div>
+                    </div>
+                    <div class="focus-item">
+                        <div class="focus-icon">⏰</div>
+                        <div class="focus-content">
+                            <strong>Work at 3:30 PM</strong>
+                            <span>Restaurant manager shift.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">🤝</span>
+                Your Network
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Ben Collins</h3>
+                    <div class="card-desc">
+                        Host of Road to Success podcast. Part of Tweak Marketing. Flagship RTS partner — your bridge to Tweak's client base.
+                    </div>
+                    <div class="card-meta">
+                        <span>🎙️ Podcast host</span>
+                        <span class="badge badge-hot">Key</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Gabriel</h3>
+                    <div class="card-desc">
+                        Golf app co-founder. Long-time friend. Both target users of the app.
+                    </div>
+                    <div class="card-meta">
+                        <span>⛳ Co-founder</span>
+                        <span class="badge badge-explore">Partner</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>James (The Masons Arms)</h3>
+                    <div class="card-desc">
+                        Manager at sister pub of Double Red Duke. Gave you the rota builder idea. Perfect first customer.
+                    </div>
+                    <div class="card-meta">
+                        <span>🍺 Domain expert</span>
+                        <span class="badge badge-explore">Advisor</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Paul</h3>
+                    <div class="card-desc">
+                        Mentor. Just back in the UK. Networking + business guidance.
+                    </div>
+                    <div class="card-meta">
+                        <span>💼 Mentor</span>
+                        <span class="badge badge-wait">TBD today</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Tweak Marketing</h3>
+                    <div class="card-desc">
+                        Full-service marketing agency. Ben's business partners. Already selling "AI services" — you're the tech behind it.
+                    </div>
+                    <div class="card-meta">
+                        <span>🏢 Distribution</span>
+                        <span class="badge badge-hot">Launchpad</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Mentors</h3>
+                    <div class="card-desc">
+                        The broader network of people who guide you. Don't underestimate the value of asking them the right questions.
+                    </div>
+                    <div class="card-meta">
+                        <span>🧠 Guidance</span>
+                        <span class="badge badge-done">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mindset -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">💪</span>
+                Remember
+            </div>
+            <div class="card">
+                <div class="reminder">
+                    <strong>You have distribution.</strong> Most founders spend years finding it. Ben + Tweak is your unfair advantage. Every improvement to RTS is a sales asset.
+                </div>
+                <div class="reminder">
+                    <strong>Domain expertise is rare.</strong> You're a restaurant manager building tools for restaurant managers. Nobody is closer to the pain.
+                </div>
+                <div class="reminder">
+                    <strong>Proof beats promises.</strong> Get RTS working brilliantly. Get results. Then everything else — rota, growth service, tools — becomes credible.
+                </div>
+                <div class="reminder">
+                    <strong>You're 20.</strong> Exploring is the job. Don't lock in too soon. But when you find a winner, go hard.
+                </div>
+                <div class="reminder">
+                    <strong>Momentum matters.</strong> A small daily push beats a big weekly one. Show up. Even 30 minutes moves the needle.
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            🦊 Built for Herbie by Oliver · Static site · <span id="year"></span>
+        </footer>
+    </div>
+
+    <script>
+        // Update date/time
+        const dateEl = document.getElementById('date-line');
+        const now = new Date();
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        dateEl.textContent = now.toLocaleDateString('en-GB', options);
+        document.getElementById('year').textContent = now.getFullYear();
+
+        // Rotating quotes
+        const quotes = [
+            { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+            { text: "You don't have to see the whole staircase, just take the first step.", author: "Martin Luther King Jr." },
+            { text: "Success is not final, failure is not fatal. It is the courage to continue that counts.", author: "Winston Churchill" },
+            { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+            { text: "Ideas are worthless. Execution is everything.", author: "Tony Hsieh" },
+            { text: "Perfect is the enemy of good.", author: "Voltaire" },
+            { text: "Do one thing every day that scares you.", author: "Eleanor Roosevelt" },
+            { text: "Your network is your net worth.", author: "Porter Gale" },
+            { text: "Build something 1% better every day.", author: "James Clear" },
+            { text: "Momentum is more important than perfection.", author: "Unknown" },
+            { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
+            { text: "You are the average of the five people you spend the most time with.", author: "Jim Rohn" },
+            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+            { text: "Whether you think you can or you think you can't, you're right.", author: "Henry Ford" },
+            { text: "In the middle of every difficulty lies opportunity.", author: "Albert Einstein" }
+        ];
+
+        // Rotate quote based on day-of-year so it changes daily but is consistent same-day
+        const startOfYear = new Date(now.getFullYear(), 0, 0);
+        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24));
+        const quote = quotes[dayOfYear % quotes.length];
+
+        document.getElementById('quote-text').textContent = quote.text;
+        document.getElementById('quote-author').textContent = `— ${quote.author}`;
+    </script>
+</body>
+</html>
