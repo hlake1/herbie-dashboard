@@ -673,32 +673,38 @@
         dateEl.textContent = now.toLocaleDateString('en-GB', options);
         document.getElementById('year').textContent = now.getFullYear();
 
-        // Rotating quotes
-        const quotes = [
+        // Fallback quotes if quote.json fails to load (never leave the page blank)
+        const fallbackQuotes = [
             { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
             { text: "You don't have to see the whole staircase, just take the first step.", author: "Martin Luther King Jr." },
-            { text: "Success is not final, failure is not fatal. It is the courage to continue that counts.", author: "Winston Churchill" },
-            { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
             { text: "Ideas are worthless. Execution is everything.", author: "Tony Hsieh" },
             { text: "Perfect is the enemy of good.", author: "Voltaire" },
-            { text: "Do one thing every day that scares you.", author: "Eleanor Roosevelt" },
-            { text: "Your network is your net worth.", author: "Porter Gale" },
-            { text: "Build something 1% better every day.", author: "James Clear" },
             { text: "Momentum is more important than perfection.", author: "Unknown" },
-            { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
-            { text: "You are the average of the five people you spend the most time with.", author: "Jim Rohn" },
-            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-            { text: "Whether you think you can or you think you can't, you're right.", author: "Henry Ford" },
-            { text: "In the middle of every difficulty lies opportunity.", author: "Albert Einstein" }
+            { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" }
         ];
 
-        // Rotate quote based on day-of-year so it changes daily but is consistent same-day
-        const startOfYear = new Date(now.getFullYear(), 0, 0);
-        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24));
-        const quote = quotes[dayOfYear % quotes.length];
+        function useFallbackQuote() {
+            const startOfYear = new Date(now.getFullYear(), 0, 0);
+            const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24));
+            const quote = fallbackQuotes[dayOfYear % fallbackQuotes.length];
+            document.getElementById('quote-text').textContent = quote.text;
+            document.getElementById('quote-author').textContent = `— ${quote.author}`;
+        }
 
-        document.getElementById('quote-text').textContent = quote.text;
-        document.getElementById('quote-author').textContent = `— ${quote.author}`;
+        // Load today's fresh quote (updated daily by cron via GitHub Pages).
+        // Cache-bust with today's date so a new deploy actually shows up.
+        const today = now.toISOString().slice(0, 10);
+        fetch(`quote.json?v=${today}`, { cache: 'no-cache' })
+            .then((r) => (r.ok ? r.json() : Promise.reject('bad status')))
+            .then((q) => {
+                if (q && q.text && q.author) {
+                    document.getElementById('quote-text').textContent = q.text;
+                    document.getElementById('quote-author').textContent = `— ${q.author}`;
+                } else {
+                    useFallbackQuote();
+                }
+            })
+            .catch(useFallbackQuote);
     </script>
 </body>
 </html>
