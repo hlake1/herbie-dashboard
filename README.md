@@ -8,7 +8,7 @@ A single static HTML page — no build step, no dependencies, no server needed. 
 
 ## Sections
 
-- **Daily Quote** — Rotates through 15 quotes based on day of year (changes daily)
+- **Daily Quote** — Fresh quote generated each morning by an AI cron job (falls back to a rotating set of 6 quotes if `quote.json` can't be loaded)
 - **Ideas in Motion** — Active projects (RTS Platform, Rota Builder, Golf App, Podcast Growth Service)
 - **This Week's Progress** — RTS platform build status + today's focus
 - **Your Network** — Ben, Gabriel, James, Paul, Tweak, mentors
